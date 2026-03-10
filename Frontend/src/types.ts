@@ -2,6 +2,7 @@ export type Todo = {
   id: number
   text: string
   createdAt: string
+  totype: string
 }
 
 export type TodoCardProps = {
@@ -12,4 +13,9 @@ export type TodoCardProps = {
 export type TodosBoardProps = {
   todos: Todo[]
   setTodos: (todos: Todo[]) => void
+}
+
+export type TodosTypeProps = {
+  selectedType: string
+  setSelectedType: (type: string) => void
 }
