@@ -12,7 +12,7 @@ export type TodoCardProps = {
 
 export type TodosBoardProps = {
   todos: Todo[]
-  setTodos: (todos: Todo[]) => void
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
 }
 
 export type TodosTypeProps = {

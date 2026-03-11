@@ -19,7 +19,7 @@ const TodosTop = ({todos, setTodos}:TodosBoardProps):React.JSX.Element => {
         totype: selectedType
         }
 
-    setTodos([...todos, newTodo])
+    setTodos((prev):Todo[]=> [...prev, newTodo]);
 
     setInputValue("")
 

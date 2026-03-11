@@ -4,7 +4,7 @@ import TodoCard from "./TodoCard"
 
 const TodosBoard = ({todos, setTodos}:TodosBoardProps):React.JSX.Element => {
     const handleDelete = (id:number):void =>{
-        setTodos(todos.filter((todo) => todo.id !== id))
+        setTodos((prev):Todo[] => prev.filter((todo) => todo.id !== id))
     }
 
     return (<div className="flex flex-wrap gap-2 w-full">{todos.map((todo:Todo): React.JSX.Element => (

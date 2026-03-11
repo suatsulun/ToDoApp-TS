@@ -1,4 +1,4 @@
-import type { TodosBoardProps } from "@/types"
+import type { TodosBoardProps} from "@/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,7 @@ const DeleteAll = ({setTodos}:TodosBoardProps):React.JSX.Element =>{
 
     
     const handleDeleteAll = ():void =>{
-        setTodos([])
+        setTodos([]);
     }
 
     return (
