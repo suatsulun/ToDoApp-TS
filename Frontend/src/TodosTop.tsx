@@ -1,4 +1,4 @@
-import type { Todo, TodosBoardProps } from "@/types"
+import type { TodosTopProps } from "@/types"
 import React, {useState} from "react"
 import { Input } from './components/ui/input'
 import { Button } from './components/ui/button'
@@ -8,32 +8,26 @@ import { Field } from "@/components/ui/field"
 import DeleteAll from "./DeleteAll"
 import TodosType from "./TodosTypes"
 
-const TodosTop = ({todos, setTodos}:TodosBoardProps):React.JSX.Element => {
+const TodosTop = ({ handleAddTodo, handleDeleteAll }: TodosTopProps):React.JSX.Element => {
     const [inputValue, setInputValue] = useState<string>("")
-    const [selectedType, setSelectedType] = useState<string>("")
-    const handleAdd = () =>{
-        const newTodo:Todo = {
-        id: Date.now(),
-        text: inputValue,
-        createdAt: new Date().toLocaleDateString("en-UK"),
-        totype: selectedType
-        }
-
-    setTodos((prev):Todo[]=> [...prev, newTodo]);
-
-    setInputValue("")
-
+    const [selectedType, setSelectedType] = useState<string>("Todo")
+    const onAddClick = () => {
+        if (!inputValue.trim()) return;
+        handleAddTodo(inputValue, selectedType);
+    
+        setInputValue("");
+        setSelectedType("Todo");
     
     }
 
-    return (<div className="flex flex-row">
+    return (<div className="flex flex-row items-center gap-4">
         <Field >
             <ButtonGroup >
             <Input className="border-1 border-black rounded-full" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="Write ToDos here..."/>
             <TodosType selectedType={selectedType} setSelectedType={setSelectedType}/>
-            <Button className="flex-initial border-1 border-black rounded-full" onClick={handleAdd} variant="default"><Plus />Add</Button></ButtonGroup>
+            <Button className="flex-initial border-1 border-black rounded-full" onClick={onAddClick} variant="default"><Plus />Add</Button></ButtonGroup>
         </Field>
-        <DeleteAll setTodos={setTodos} todos={todos} />
+        <DeleteAll handleDeleteAll={handleDeleteAll} />
         </div>)
 }
 

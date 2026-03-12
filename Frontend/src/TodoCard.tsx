@@ -17,7 +17,7 @@ const TodoCard = ({todo, handleDelete}:TodoCardProps):React.JSX.Element => {
                 <CardHeader>
                     <CardTitle className='w-max'>{todo.text}</CardTitle>
                     <CardDescription><span>Created at:</span><br />{todo.createdAt}</CardDescription>
-                    <CardDescription>{todo.totype}</CardDescription>
+                    <CardDescription>{todo.status}</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex-column">
                     <Button className="border-1 border-red-600 rounded-full ml-2 w-full" onClick={()=> handleDelete(todo.id)} variant="destructive">

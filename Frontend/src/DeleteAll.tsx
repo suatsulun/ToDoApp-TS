@@ -1,4 +1,4 @@
-import type { TodosBoardProps} from "@/types"
+import type { DeleteAllProps} from "@/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,12 +13,8 @@ import {
 import { Button } from "./components/ui/button"
 import { Trash } from "lucide-react"
 
-const DeleteAll = ({setTodos}:TodosBoardProps):React.JSX.Element =>{
+const DeleteAll = ({handleDeleteAll}:DeleteAllProps):React.JSX.Element =>{
 
-    
-    const handleDeleteAll = ():void =>{
-        setTodos([]);
-    }
 
     return (
     <AlertDialog>
