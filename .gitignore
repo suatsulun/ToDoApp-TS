@@ -26,3 +26,14 @@ dist-ssr
 __pycache__/
 *.pyc
 .env
+
+# --- ADDED FOR PYTHON BACKEND & DATABASE ---
+
+# Ignore the Python virtual environment
+venv/
+env/
+
+# Ignore SQLite database files
+*.db
+*.sqlite3
+todos.db
