@@ -9,9 +9,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogMedia
 } from "@/components/ui/alert-dialog"
 import { Button } from "./components/ui/button"
-import { Trash } from "lucide-react"
+import { Trash , Trash2Icon} from "lucide-react"
 
 const DeleteAll = ({handleDeleteAll}:DeleteAllProps):React.JSX.Element =>{
 
@@ -21,16 +22,18 @@ const DeleteAll = ({handleDeleteAll}:DeleteAllProps):React.JSX.Element =>{
       <AlertDialogTrigger asChild>
         <Button className="flex-initial border-1 border-red-600 rounded-full ml-2" variant="destructive"><Trash />Delete All</Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent size="sm">
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+            <Trash2Icon />
+          </AlertDialogMedia>
+          <AlertDialogTitle>Delete All Todos?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will delete all your
-            ToDos.
+            This action cannot be undone and will permanently delete all your Todos.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
           <AlertDialogAction className="flex-initial border-1 border-red-600 rounded-full ml-2" variant="destructive" onClick={handleDeleteAll}>Delete All</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
