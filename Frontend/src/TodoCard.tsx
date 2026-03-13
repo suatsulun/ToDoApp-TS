@@ -16,7 +16,7 @@ const TodoCard = ({todo, handleDelete}:TodoCardProps):React.JSX.Element => {
                 <Card className="w-fit">
                 <CardHeader>
                     <CardTitle className='w-max'>{todo.text}</CardTitle>
-                    <CardDescription><span>Created at:</span><br />{todo.createdAt}</CardDescription>
+                    <CardDescription><span>Created at:</span><br />{new Date(todo.createdAt).toLocaleDateString("en-GB")}</CardDescription>
                     <CardDescription>{todo.status}</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex-column">

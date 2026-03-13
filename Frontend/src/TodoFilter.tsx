@@ -1,15 +1,15 @@
 import type { TodoFilterProps } from "@/types"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label" 
+import { FILTER_STATUSES } from "./config"
 
 const TodoFilter = ({ activeFilters, handleToggleFilter }: TodoFilterProps): React.JSX.Element => {
     
-    const availableStatuses = ["Todo", "In progress", "Done", "Canceled"]
 
     return (
         <div className="flex flex-row gap-4 my-4 items-center p-4 border-1 border-gray-200 rounded-lg">
             <span className="font-semibold text-sm">Filter by Status:</span>
-            {availableStatuses.map((status) => (
+            {FILTER_STATUSES.map((status) => (
                 <div key={status} className="flex items-center space-x-2">
                     <Checkbox 
                         id={`filter-${status}`} 

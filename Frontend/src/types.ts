@@ -7,16 +7,16 @@ export type Todo = {
 
 export type TodoCardProps = {
   todo: Todo
-  handleDelete: (id: number) => void
+  handleDelete: (id: number) => Promise<void>
 }
 
 export type TodosBoardProps = {
   todos: Todo[]
-  handleDelete: (id: number) => void
+  handleDelete: (id: number) => Promise<void>
 }
 
 export type TodosTopProps = {
-  handleAddTodo: (text: string, status: string) => void
+  handleAddTodo: (text: string, status: string) => Promise<void>
   handleDeleteAll: () => void
 }
 
@@ -32,4 +32,9 @@ export type TodosTypeProps = {
 export type TodoFilterProps = {
   activeFilters: string[]
   handleToggleFilter: (status: string) => void
+}
+
+export type todoAPI = {
+  text: string
+  status: string
 }

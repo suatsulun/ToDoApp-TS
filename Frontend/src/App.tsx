@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import TodosList from './TodosList'
 import './App.css'
+import { API_BASE_URL } from './config'
 
 
 
@@ -10,7 +11,7 @@ const App = ():React.JSX.Element => {
   useEffect(() =>{
     const fetchUser = async () =>{
       try {
-        const response = await fetch("http://127.0.0.1:8000/me")
+        const response = await fetch(`${API_BASE_URL}/me`)
         if (response.ok) {
           const data = await response.json()
           setUserName(data.name)
