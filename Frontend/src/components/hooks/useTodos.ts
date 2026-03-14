@@ -77,6 +77,27 @@ export const useTodos = () =>{
         activeFilters.length === 0 || activeFilters.includes(todo.status)
     )
 
+    const updateTodo = async (id: number, text: string, status:string): Promise<void> => {
+        try{
+            const response = await fetch(`${API_BASE_URL}/api/todos/${id}`, {
+                method: "PUT",
+                headers: {"Content-type": "application/json"},
+                body: JSON.stringify({text:text, status:status})
+            })
+            if(response.ok) {
+                const data= await response.json()
+                setTodos((prev): Todo[] => 
+                    prev.map((todo) => todo.id === id ? data:todo)
+            )
+            } else {
+                console.error("Server responded with an error")
+            }
+        } catch (error) {
+            console.error("Could not connect to the backend:", error)
+        }
+        
+    }
+
     return {
         todos: filteredTodos,
         activeFilters,
@@ -84,5 +105,6 @@ export const useTodos = () =>{
         handleDeleteTodo,
         handleDeleteAll,
         handleToggleFilter,
+        updateTodo,
     }
     }

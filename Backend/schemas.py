@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-class TodoCreate(BaseModel):
+class TodoBase(BaseModel):
     text: str
     status: str
-

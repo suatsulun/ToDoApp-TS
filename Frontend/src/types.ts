@@ -8,11 +8,13 @@ export type Todo = {
 export type TodoCardProps = {
   todo: Todo
   handleDelete: (id: number) => Promise<void>
+  updateTodo: (id: number, text: string, status: string) => Promise<void>
 }
 
 export type TodosBoardProps = {
   todos: Todo[]
   handleDelete: (id: number) => Promise<void>
+  updateTodo: (id: number, text: string, status: string) => Promise<void>
 }
 
 export type TodosTopProps = {

@@ -15,7 +15,7 @@ const TodosType = ({selectedType, setSelectedType}:TodosTypeProps):React.JSX.Ele
 
     return (
     <Select value={selectedType} onValueChange={setSelectedType}>
-  <SelectTrigger className="w-[180px] border-1 border-black rounded-xs">
+  <SelectTrigger className="w-[145px] border-1 border-black rounded-xs">
     <SelectValue placeholder="Todo Type" className="rounded-xs"/>
   </SelectTrigger>
   <SelectContent className="rounded-xs">

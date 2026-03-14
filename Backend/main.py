@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import TodoCreate
+from schemas import TodoBase
 from database import engine, SessionLocal
 import models
 from sqlalchemy.orm import Session
@@ -41,7 +41,7 @@ def get_todos(db: Session = Depends(get_db)):
     return todos
 
 @app.post("/api/todos")
-def add_todo(todo: TodoCreate, db: Session = Depends(get_db)):
+def add_todo(todo: TodoBase, db: Session = Depends(get_db)):
     new_todo = models.Todo(text=todo.text, status=todo.status)
     db.add(new_todo)
     db.commit()
@@ -60,3 +60,12 @@ def delete_all(db: Session = Depends(get_db)):
     db.query(models.Todo).delete()
     db.commit()
     return {"message": "All todos deleted"}
+
+@app.put("/api/todos/{todo_id}")
+def update_todo(todo_update: TodoBase, todo_id: int, db: Session = Depends(get_db)):
+    db_todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    setattr(db_todo, "text", todo_update.text)
+    setattr(db_todo, "status", todo_update.status)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo

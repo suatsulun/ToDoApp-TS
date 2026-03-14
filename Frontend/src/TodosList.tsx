@@ -12,14 +12,15 @@ const TodosList = (): React.JSX.Element =>{
   handleAddTodo, 
   handleDeleteTodo, 
   handleDeleteAll, 
-  handleToggleFilter 
+  handleToggleFilter,
+  updateTodo, 
 } = useTodos()
 
     return <div>
         <TodosTop handleAddTodo={handleAddTodo} handleDeleteAll={handleDeleteAll} />
         <TodoFilter activeFilters={activeFilters} handleToggleFilter={handleToggleFilter} 
             />
-        <TodosBoard todos={todos} handleDelete={handleDeleteTodo} />
+        <TodosBoard todos={todos} handleDelete={handleDeleteTodo} updateTodo={updateTodo} />
     </div>
 }
 
