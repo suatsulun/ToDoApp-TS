@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import TodosList from './TodosList'
 import './App.css'
 import { API_BASE_URL } from './config'
+import { Toaster } from './components/ui/sonner'
+
 
 
 
@@ -38,6 +40,7 @@ const App = ():React.JSX.Element => {
         </h1>
       )}
     <TodosList />
+    <Toaster position="top-center" />
     </div>
   )
 }

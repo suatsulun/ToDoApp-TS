@@ -2,8 +2,11 @@ import type { TodoFilterProps } from "@/types"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label" 
 import { FILTER_STATUSES } from "./config"
+import { Button } from "./components/ui/button"
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 
-const TodoFilter = ({ activeFilters, handleToggleFilter }: TodoFilterProps): React.JSX.Element => {
+
+const TodoFilter = ({ activeFilters, handleToggleFilter, toggleSortOrder, sortOrder }: TodoFilterProps): React.JSX.Element => {
     
 
     return (
@@ -21,11 +24,20 @@ const TodoFilter = ({ activeFilters, handleToggleFilter }: TodoFilterProps): Rea
                     </Label>
                 </div>
             ))}
-            {activeFilters.length > 0 && (
-                <span className="text-xs text-gray-500 italic ml-auto">
+            <div className="ml-auto">{activeFilters.length > 0 && (
+                <span className="text-xs text-gray-500 italic mr-2">
                     Showing selected statuses
                 </span>
-            )}
+            )} 
+            {sortOrder === `desc`? 
+            <><Button  size="icon" aria-label="Submit" onClick={toggleSortOrder}>
+            <ArrowUpIcon />
+            </Button></>
+            :
+            <><Button  size="icon" aria-label="Submit" onClick={toggleSortOrder}>
+            <ArrowDownIcon />
+            </Button></>}
+            </div>
         </div>
     )
 }

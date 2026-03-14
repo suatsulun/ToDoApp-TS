@@ -34,6 +34,8 @@ export type TodosTypeProps = {
 export type TodoFilterProps = {
   activeFilters: string[]
   handleToggleFilter: (status: string) => void
+  sortOrder: 'asc' | 'desc';
+  toggleSortOrder: () => void;
 }
 
 export type todoAPI = {

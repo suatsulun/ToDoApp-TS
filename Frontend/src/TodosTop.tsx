@@ -7,6 +7,7 @@ import { ButtonGroup } from "@/components/ui/button-group"
 import { Field } from "@/components/ui/field"
 import DeleteAll from "./DeleteAll"
 import TodosType from "./TodosType"
+import { toast } from "sonner"
 
 const TodosTop = ({ handleAddTodo, handleDeleteAll }: TodosTopProps):React.JSX.Element => {
     const [inputValue, setInputValue] = useState<string>("")
@@ -15,7 +16,7 @@ const TodosTop = ({ handleAddTodo, handleDeleteAll }: TodosTopProps):React.JSX.E
         e.preventDefault();
         if (inputValue.trim()){
         handleAddTodo(inputValue, selectedType);
-    
+        toast.success("Todo has been created")
         setInputValue("");
         setSelectedType("Todo");
     }

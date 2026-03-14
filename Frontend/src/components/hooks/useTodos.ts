@@ -1,11 +1,16 @@
 import { API_BASE_URL } from "@/config"
 import { useEffect, useState } from "react"
 import type { Todo } from "@/types"
+import { toast } from "sonner"
 
 
 export const useTodos = () =>{
     const [todos, setTodos] = useState<Todo[]>([])
     const [activeFilters, setActiveFilters] = useState<string[]>([])
+    const[sortOrder, setSortOrder] = useState<`asc`|`desc`>(`desc`)
+    const toggleSortOrder = ():void => {
+        setSortOrder((prev)=> prev === `desc` ? `asc`:`desc`)
+    }
     useEffect(() => {
     const fetchTodos = async () =>{
         try{
@@ -47,6 +52,11 @@ export const useTodos = () =>{
             })
             if(response.ok) {
                 setTodos((prev): Todo[] => prev.filter((todo) => todo.id !== id))
+                toast.success("Todo has been deleted", {
+  style: {
+    color: 'red',
+  },
+});
             }else{
                 console.error("Server responded with an error")
             }} catch (error) {
@@ -60,6 +70,11 @@ export const useTodos = () =>{
             })
             if(response.ok) {
                 setTodos([])
+                toast.success("All Todos has been deleted", {
+  style: {
+    color: 'red',
+  },
+});
             }else{
                 console.error("Server responded with an error")
             }} catch (error) {
@@ -73,9 +88,14 @@ export const useTodos = () =>{
                 : [...prev, status]
         )
     }
-    const filteredTodos = todos.filter((todo) => 
-        activeFilters.length === 0 || activeFilters.includes(todo.status)
-    )
+    const filteredTodos = todos
+    .filter((todo) => 
+        activeFilters.length === 0 || activeFilters.includes(todo.status))
+    .sort((a, b) => {
+        const timeA= new Date(a.createdAt).getTime()
+        const timeB= new Date(b.createdAt).getTime()
+        return sortOrder === `asc` ? timeA - timeB : timeB - timeA
+    })
 
     const updateTodo = async (id: number, text: string, status:string): Promise<void> => {
         try{
@@ -101,6 +121,8 @@ export const useTodos = () =>{
     return {
         todos: filteredTodos,
         activeFilters,
+        sortOrder,
+        toggleSortOrder,
         handleAddTodo,
         handleDeleteTodo,
         handleDeleteAll,

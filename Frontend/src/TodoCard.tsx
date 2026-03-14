@@ -11,6 +11,8 @@ import {
 import { Button } from "./components/ui/button"
 import { Trash, Edit, X, Check } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
+
 
 
 const TodoCard = ({todo, handleDelete, updateTodo}:TodoCardProps):React.JSX.Element => {
@@ -20,6 +22,7 @@ const TodoCard = ({todo, handleDelete, updateTodo}:TodoCardProps):React.JSX.Elem
 
     const handleSave = () =>{
         updateTodo(todo.id, editText, editStatus);
+        toast.success("Todo has been updated")
         setIsEditing(false);
     }
 
