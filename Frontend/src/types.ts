@@ -22,7 +22,7 @@ export type TodosTopProps = {
   handleDeleteAll: () => void
 }
 
-export type DeleteAllProps ={
+export type DeleteAllProps = {
   handleDeleteAll: () => void
 }
 
@@ -41,4 +41,12 @@ export type TodoFilterProps = {
 export type todoAPI = {
   text: string
   status: string
+}
+
+export type TodoPagesProps = {
+  currentPage: number
+  totalTodos: number
+  pageSize: number
+  setPageSize: (size: number) => void
+  handlePageChange: (page: number) => void
 }

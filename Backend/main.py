@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import TodoBase
 from database import engine, SessionLocal
@@ -36,9 +36,21 @@ def read_root():
     return {"message": "Backend is running!"}
 
 @app.get("/api/todos")
-def get_todos(db: Session = Depends(get_db)):
-    todos = db.query(models.Todo).all()
-    return todos
+def get_todos(limit: int = 10, sort_order: str = "desc", page_number: int = 1, status: str = None, db: Session = Depends(get_db)):
+    skip = (page_number - 1) * limit
+    query = db.query(models.Todo)
+    if status is not None and status != "":
+        statuses = status.split(",")
+        query = query.filter(models.Todo.status.in_(statuses))
+
+    if sort_order == "desc":
+        sorted_todos = query.order_by(models.Todo.createdAt.desc())
+    else:
+        sorted_todos = query.order_by(models.Todo.createdAt.asc())
+        
+    todos = sorted_todos.offset(skip).limit(limit).all()
+    todo_number = sorted_todos.count()
+    return {"todos": todos, "todo_number": todo_number}
 
 @app.post("/api/todos")
 def add_todo(todo: TodoBase, db: Session = Depends(get_db)):
@@ -51,6 +63,10 @@ def add_todo(todo: TodoBase, db: Session = Depends(get_db)):
 @app.delete("/api/todos/{todo_id}")
 def delete_todo(todo_id: int, db: Session = Depends(get_db)):
     todo_to_delete = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    
+    if todo_to_delete is None:
+        raise HTTPException(status_code=404, detail="Todo not found")
+        
     db.delete(todo_to_delete)
     db.commit()
     return {"message": "Todo deleted"}
@@ -64,6 +80,10 @@ def delete_all(db: Session = Depends(get_db)):
 @app.put("/api/todos/{todo_id}")
 def update_todo(todo_update: TodoBase, todo_id: int, db: Session = Depends(get_db)):
     db_todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    
+    if db_todo is None:
+        raise HTTPException(status_code=404, detail="Todo not found")
+        
     setattr(db_todo, "text", todo_update.text)
     setattr(db_todo, "status", todo_update.status)
     db.commit()
