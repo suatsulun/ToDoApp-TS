@@ -1,4 +1,4 @@
-import type { DeleteAllProps} from "@/types"
+import type { DeleteAllProps } from "@/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,18 +9,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogMedia
-} from "@/components/ui/alert-dialog"
-import { Button } from "./components/ui/button"
-import { Trash , Trash2Icon} from "lucide-react"
+  AlertDialogMedia,
+} from "@/components/ui/alert-dialog";
+import { Button } from "./components/ui/button";
+import { Trash, Trash2Icon } from "lucide-react";
 
-const DeleteAll = ({handleDeleteAll}:DeleteAllProps):React.JSX.Element =>{
-
-
-    return (
+const DeleteAll = ({ handleDeleteAll }: DeleteAllProps): React.JSX.Element => {
+  return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button className="flex-initial border-1 border-red-600 rounded-full ml-2" variant="destructive"><Trash />Delete All</Button>
+        <Button
+          className="flex-initial border-1 border-red-600 rounded-full ml-2"
+          variant="destructive"
+        >
+          <Trash />
+          Delete All
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
@@ -29,15 +33,22 @@ const DeleteAll = ({handleDeleteAll}:DeleteAllProps):React.JSX.Element =>{
           </AlertDialogMedia>
           <AlertDialogTitle>Delete All Todos?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone and will permanently delete all your Todos.
+            This action cannot be undone and will permanently delete all your
+            Todos.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
-          <AlertDialogAction className="flex-initial border-1 border-red-600 rounded-full ml-2" variant="destructive" onClick={handleDeleteAll}>Delete All</AlertDialogAction>
+          <AlertDialogAction
+            className="flex-initial border-1 border-red-600 rounded-full ml-2"
+            variant="destructive"
+            onClick={handleDeleteAll}
+          >
+            Delete All
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
-export default DeleteAll
+  );
+};
+export default DeleteAll;

@@ -7,4 +7,4 @@ class Todo(Base):
     id = Column(Integer, primary_key=True, index=True)
     text = Column(String, index=True)
     status = Column(String, index=True)
-    createdAt = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
