@@ -1,4 +1,4 @@
-import type { DeleteAllProps } from "@/types";
+import type { DeleteAllProps } from "@/types/todos";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
   AlertDialogTrigger,
   AlertDialogMedia,
 } from "@/components/ui/alert-dialog";
-import { Button } from "./components/ui/button";
+import { Button } from "../ui/button";
 import { Trash, Trash2Icon } from "lucide-react";
 
 const DeleteAll = ({ handleDeleteAll }: DeleteAllProps): React.JSX.Element => {

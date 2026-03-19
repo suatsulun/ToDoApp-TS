@@ -1,6 +1,47 @@
 import datetime
 from pydantic import BaseModel
 
+class FamilyCreate(BaseModel):
+    name: str
+
+class FamilyResponse(BaseModel):
+    id: int
+    name: str
+    
+    class Config:
+        from_atributes = True
+
+class InviteUser(BaseModel):
+    identifier: str
+
+class InvitationResponse(BaseModel):
+    id: int
+    family_id: int
+    sender_id: int
+    
+    class Config:
+        from_attributes = True
+
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    email: str
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    family_id: int | None = None
+    family: FamilyResponse | None = None
+
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class TodoBase(BaseModel):
     text: str
     status: str
@@ -8,6 +49,8 @@ class TodoBase(BaseModel):
 class TodoResponse(TodoBase):
     id: int
     created_at: datetime.datetime
+    owner_id: int
+    owner: UserResponse
 
     class Config:
         from_attributes = True

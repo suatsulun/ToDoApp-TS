@@ -1,7 +1,7 @@
 import TodoFilter from "./TodoFilter";
 import TodosBoard from "./TodosBoard";
 import TodosTop from "./TodosTop";
-import { useTodos } from "./components/hooks/useTodos";
+import { useTodos } from "../hooks/useTodos";
 import { TodoPages } from "./TodoPages";
 
 const TodosList = (): React.JSX.Element => {

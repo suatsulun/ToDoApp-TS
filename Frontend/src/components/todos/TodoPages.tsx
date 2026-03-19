@@ -14,8 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TodoPagesProps } from "./types";
-import { NUMBER_OF_TODOS } from "./config";
+import type { TodoPagesProps } from "../../types/todos";
+import { NUMBER_OF_TODOS } from "../../config/constants";
 
 export function TodoPages({
   currentPage,

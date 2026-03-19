@@ -1,4 +1,4 @@
-import type { TodosBoardProps, Todo } from "@/types";
+import type { TodosBoardProps, Todo } from "@/types/todos";
 import TodoCard from "./TodoCard";
 
 const TodosBoard = ({

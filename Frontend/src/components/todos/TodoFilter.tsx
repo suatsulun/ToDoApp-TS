@@ -1,8 +1,8 @@
-import type { TodoFilterProps } from "@/types";
+import type { TodoFilterProps } from "@/types/todos";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { FILTER_STATUSES } from "./config";
-import { Button } from "./components/ui/button";
+import { FILTER_STATUSES } from "../../config/constants";
+import { Button } from "../ui/button";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
 const TodoFilter = ({

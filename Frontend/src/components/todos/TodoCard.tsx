@@ -1,5 +1,5 @@
-import type { TodoCardProps } from "@/types";
-import { Input } from "./components/ui/input";
+import type { TodoCardProps } from "@/types/todos";
+import { Input } from "../ui/input";
 import TodosType from "./TodosType";
 import {
   Card,
@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "./components/ui/button";
+import { Button } from "../ui/button";
 import { Trash, Edit, X, Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

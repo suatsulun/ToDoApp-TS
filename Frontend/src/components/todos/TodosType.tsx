@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TodosTypeProps } from "./types";
+import type { TodosTypeProps } from "../../types/todos";
 
 const TodosType = ({
   selectedType,

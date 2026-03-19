@@ -1,7 +1,7 @@
-import type { TodosTopProps } from "@/types";
+import type { TodosTopProps } from "@/types/todos";
 import React, { useState, type SubmitEvent } from "react";
-import { Input } from "./components/ui/input";
-import { Button } from "./components/ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Field } from "@/components/ui/field";

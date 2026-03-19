@@ -1,9 +1,12 @@
-import { API_BASE_URL } from "@/config";
+import { API_BASE_URL } from "@/config/constants";
 import { useEffect, useState } from "react";
-import type { Todo } from "@/types";
+import type { Todo } from "@/types/todos";
 import { toast } from "sonner";
+import { useAuth } from "../../context/AuthContext"
+
 
 export const useTodos = () => {
+  const { token } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<`asc` | `desc`>(`desc`);
@@ -21,10 +24,15 @@ export const useTodos = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        const statusQuery =
-          activeFilters.length > 0 ? `&status=${activeFilters.join(",")}` : "";
+        const statusQuery = activeFilters.length > 0 ? `&${activeFilters.map(status => `status=${status}`).join("&")}` : "";
         const response = await fetch(
-          `${API_BASE_URL}/api/todos?limit=${pageSize}&sort_order=${sortOrder}&page_number=${currentPage}${statusQuery}`,
+          `${API_BASE_URL}/api/todos?limit=${pageSize}&sort_order=${sortOrder}&page_number=${currentPage}${statusQuery}`,{
+            method : "GET",
+            headers : { 
+              "Content-type": "application/json",
+              "Authorization": `Bearer ${token}` 
+            }
+          }
         );
 
         if (response.ok) {
@@ -45,11 +53,12 @@ export const useTodos = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/todos`, {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: { "Content-type": "application/json",
+          "Authorization": `Bearer ${token}`,
+         },
         body: JSON.stringify({ text: text, status: status }),
       });
       if (response.ok) {
-        // Trigger a re-fetch and go to the first page to see the new item
         setRefreshTrigger((prev) => prev + 1);
         setCurrentPage(1);
       } else {
@@ -63,6 +72,9 @@ export const useTodos = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/todos/${id}`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       });
       if (response.ok) {
         setRefreshTrigger((prev) => prev + 1);
@@ -82,6 +94,9 @@ export const useTodos = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/todos`, {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       });
       if (response.ok) {
         setRefreshTrigger((prev) => prev + 1);
@@ -113,7 +128,10 @@ export const useTodos = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/todos/${id}`, {
         method: "PUT",
-        headers: { "Content-type": "application/json" },
+        headers: { 
+          "Content-type": "application/json",
+          "Authorization": `Bearer ${token}`
+         },
         body: JSON.stringify({ text: text, status: status }),
       });
       if (response.ok) {

@@ -1,17 +1,22 @@
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import TodoBase, TodoResponse, MessageResponse, TodoListResponse
+import schemas
 from database import engine, SessionLocal
 import models
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 import os
+import auth
+from database import get_db
+from typing import cast
 
 app = FastAPI(title="Todo App API")
 models.Base.metadata.create_all(bind=engine)
 
 frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 origins = [
-    frontend_url,
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 app.add_middleware(
@@ -22,31 +27,105 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally: 
-        db.close()
+app.include_router(auth.router)
 
 @app.get("/me")
-def get_current_user():
-    return{"name": "Suat"}
+def get_me(current_user: models.User = Depends(auth.get_current_user)):
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "family_id": current_user.family_id
+    }
 
 @app.get("/")
 def read_root():
     return {"message": "Backend is running!"}
 
-@app.get("/api/todos", response_model=TodoListResponse)
+@app.post("/api/families", response_model=schemas.FamilyResponse)
+def create_family(family_data: schemas.FamilyCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    if current_user.family_id is not None:
+        raise HTTPException(status_code=400, detail="You are already in a family")
+    new_family = models.Family(name=family_data.name)
+    db.add(new_family)
+    db.commit()
+    db.refresh(new_family)
+    current_user.family_id = new_family.id
+    db.commit()
+    return new_family
+
+@app.post("/api/families/leave", response_model=schemas.MessageResponse)
+def leave_family(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    if current_user.family_id is None:
+        raise HTTPException(status_code=400, detail="You are not part of a family")
+    setattr(current_user, "family_id", None)
+    db.commit()
+    db.refresh(current_user)
+    
+    return {"message": "You have successfully left the family."}
+
+
+
+@app.post("/api/families/invitations", response_model=schemas.MessageResponse)
+def family_invite(invite: schemas.InviteUser, db: Session  = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    if current_user.family_id is None:
+        raise HTTPException(status_code=400, detail="You are not in a family")
+    invitee = db.query(models.User).filter(
+        or_(models.User.username == invite.identifier,
+            models.User.email == invite.identifier
+        )).first()
+    if invitee is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    elif cast(int, invitee.id) == cast(int, current_user.id):
+        raise HTTPException(status_code=400, detail="You cannot invite yourself")
+    elif invitee.family_id is not None:
+        raise HTTPException(status_code=400, detail="You cannot invite someone who is already in a family")
+    new_invitation = models.Invitation(family_id=current_user.family_id, sender_id=current_user.id, recipient_id=invitee.id)
+    db.add(new_invitation)
+    db.commit()
+    db.refresh(new_invitation)
+    return {"message": "Invitation sent successfully!"}
+
+@app.get("/api/invitations/me", response_model=list[schemas.InvitationResponse])
+def receive_invites(db: Session  = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    return db.query(models.Invitation).filter(models.Invitation.recipient_id == current_user.id).all()
+
+@app.post("/api/invitations/{invitation_id}/accept", response_model=schemas.MessageResponse)
+def accept_invite(invitation_id: int, db:Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    invitation = db.query(models.Invitation).filter(models.Invitation.id == invitation_id).first()
+    if invitation is None:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    if cast(int, invitation.recipient_id) != cast(int, current_user.id):
+        raise HTTPException(status_code=403, detail="That invitation is not for you")
+    current_user.family_id = invitation.family_id
+    db.delete(invitation)
+    db.commit()
+    return {"message": "Invitation accepted"}
+
+@app.delete("/api/invitations/{invitation_id}/decline", response_model=schemas.MessageResponse)
+def decline_invite(invitation_id: int, db: Session  = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    invitation = db.query(models.Invitation).filter(models.Invitation.id == invitation_id).first()
+    if invitation is None:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    if cast(int, invitation.recipient_id) != cast(int, current_user.id):
+        raise HTTPException(status_code=403, detail="That invitation is not for you")
+    db.delete(invitation)
+    db.commit()
+    return {"message": "Invitation declined"}
+
+@app.get("/api/todos", response_model=schemas.TodoListResponse)
 def get_todos(
     limit: int = 10, 
     sort_order: str = "desc", 
     page_number: int = 1, 
     status: list[str] | None = Query(None), 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user)
 ):
     skip = (page_number - 1) * limit
-    query = db.query(models.Todo)
+    if current_user.family_id is not None:
+        query = db.query(models.Todo).join(models.User).filter(models.User.family_id == current_user.family_id)
+    else:
+        query = db.query(models.Todo).filter(models.Todo.owner_id == current_user.id)
     
     if status is not None and len(status) > 0:
         query = query.filter(models.Todo.status.in_(status))
@@ -60,38 +139,41 @@ def get_todos(
     todo_number = sorted_todos.count()
     return {"todos": todos, "todo_number": todo_number}
 
-@app.post("/api/todos", response_model=TodoResponse)
-def add_todo(todo: TodoBase, db: Session = Depends(get_db)):
-    new_todo = models.Todo(text=todo.text, status=todo.status)
+@app.post("/api/todos", response_model=schemas.TodoResponse)
+def add_todo(todo: schemas.TodoBase, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+    new_todo = models.Todo(text=todo.text, status=todo.status,owner_id = current_user.id)
     db.add(new_todo)
     db.commit()
     db.refresh(new_todo)
     return new_todo
 
-@app.delete("/api/todos/{todo_id}", response_model=MessageResponse)
-def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+@app.delete("/api/todos/{todo_id}", response_model=schemas.MessageResponse)
+def delete_todo(todo_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     todo_to_delete = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    
     
     if todo_to_delete is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-        
+    if cast(int, todo_to_delete.owner_id) != cast(int,current_user.id):
+        raise HTTPException(status_code=403, detail="Not authorized to delete this todo")    
     db.delete(todo_to_delete)
     db.commit()
     return {"message": "Todo deleted"}
 
-@app.delete("/api/todos", response_model=MessageResponse)
-def delete_all(db: Session = Depends(get_db)):
-    db.query(models.Todo).delete()
+@app.delete("/api/todos", response_model=schemas.MessageResponse)
+def delete_all(db: Session = Depends(get_db) , current_user: models.User = Depends(auth.get_current_user)):
+    db.query(models.Todo).filter(models.Todo.owner_id == current_user.id).delete()
     db.commit()
     return {"message": "All todos deleted"}
 
-@app.put("/api/todos/{todo_id}", response_model=TodoResponse)
-def update_todo(todo_update: TodoBase, todo_id: int, db: Session = Depends(get_db)):
+@app.put("/api/todos/{todo_id}", response_model=schemas.TodoResponse)
+def update_todo(todo_update: schemas.TodoBase, todo_id: int, db: Session = Depends(get_db) , current_user: models.User = Depends(auth.get_current_user)):
     db_todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
-    
     if db_todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-        
+    if cast(int, db_todo.owner_id) != cast(int,current_user.id):
+        raise HTTPException(status_code=403, detail="Not authorized to update this todo")    
+    
     setattr(db_todo, "text", todo_update.text)
     setattr(db_todo, "status", todo_update.status)
     db.commit()
