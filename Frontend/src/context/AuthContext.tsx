@@ -1,8 +1,8 @@
-import {createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import {createContext, useState, useEffect, type ReactNode } from "react";
 import { type User, type AuthContextType } from "../types/auth";
 import { API_BASE_URL } from "../config/constants"
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) =>{
     const [user, setUser] = useState<User | null>(null);
@@ -59,11 +59,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) =>{
         {children}
     </AuthContext.Provider>);
 };
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error("useAuth must be used withing an AuthProvider")
-    }
-    return context;
-}

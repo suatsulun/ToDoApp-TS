@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import TodosList from "../components/todos/TodosList";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../components/hooks/useAuth";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
