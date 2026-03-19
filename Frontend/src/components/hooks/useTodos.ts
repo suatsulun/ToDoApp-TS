@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@/config/constants";
 import { useEffect, useState } from "react";
 import type { Todo } from "@/types/todos";
 import { toast } from "sonner";
-import { useAuth } from "../../context/AuthContext"
+import { useAuth } from "../hooks/useAuth";
 
 
 export const useTodos = () => {
