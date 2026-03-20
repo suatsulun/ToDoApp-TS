@@ -3,6 +3,10 @@ export type Todo = {
   text: string;
   created_at: string;
   status: string;
+  owner_id: number;
+  owner: {
+    username: string;
+  };
 };
 
 export type TodoCardProps = {

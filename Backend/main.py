@@ -13,9 +13,9 @@ from typing import cast
 app = FastAPI(title="Todo App API")
 models.Base.metadata.create_all(bind=engine)
 
-frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5174")
+frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 origins = [
-    "http://localhost:5174",
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
 
@@ -34,6 +34,7 @@ def get_me(current_user: models.User = Depends(auth.get_current_user)):
     return {
         "id": current_user.id,
         "username": current_user.username,
+        "email": current_user.email,
         "family_id": current_user.family_id
     }
 
@@ -57,10 +58,15 @@ def create_family(family_data: schemas.FamilyCreate, db: Session = Depends(get_d
 def leave_family(db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     if current_user.family_id is None:
         raise HTTPException(status_code=400, detail="You are not part of a family")
+    old_family_id = current_user.family_id
     setattr(current_user, "family_id", None)
     db.commit()
     db.refresh(current_user)
-    
+    remaining_members = db.query(models.User).filter(models.User.family_id == old_family_id).count()
+    if remaining_members == 0:
+        db.query(models.Invitation).filter(models.Invitation.family_id == old_family_id).delete()
+        db.query(models.Family).filter(models.Family.id == old_family_id).delete()
+        db.commit()
     return {"message": "You have successfully left the family."}
 
 
@@ -85,11 +91,25 @@ def family_invite(invite: schemas.InviteUser, db: Session  = Depends(get_db), cu
     db.refresh(new_invitation)
     return {"message": "Invitation sent successfully!"}
 
-@app.get("/api/invitations/me", response_model=list[schemas.InvitationResponse])
+@app.get("/api/families/invitations/me", response_model=list[schemas.InvitationResponse])
 def receive_invites(db: Session  = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
-    return db.query(models.Invitation).filter(models.Invitation.recipient_id == current_user.id).all()
+    invites = db.query(
+        models.Invitation.id,
+        models.Invitation.family_id,
+        models.Invitation.sender_id,
+        models.Invitation.recipient_id,
+        models.Family.name.label("family_name"), 
+        models.User.username.label("sender_username")
+    ).join(
+        models.Family, models.Invitation.family_id == models.Family.id 
+    ).join(
+        models.User, models.Invitation.sender_id == models.User.id
+    ).filter(
+        models.Invitation.recipient_id == current_user.id
+    ).all()
+    return invites
 
-@app.post("/api/invitations/{invitation_id}/accept", response_model=schemas.MessageResponse)
+@app.post("/api/families/invitations/{invitation_id}/accept", response_model=schemas.MessageResponse)
 def accept_invite(invitation_id: int, db:Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     invitation = db.query(models.Invitation).filter(models.Invitation.id == invitation_id).first()
     if invitation is None:
@@ -97,11 +117,11 @@ def accept_invite(invitation_id: int, db:Session = Depends(get_db), current_user
     if cast(int, invitation.recipient_id) != cast(int, current_user.id):
         raise HTTPException(status_code=403, detail="That invitation is not for you")
     current_user.family_id = invitation.family_id
-    db.delete(invitation)
+    db.query(models.Invitation).filter(models.Invitation.recipient_id == current_user.id).delete()
     db.commit()
     return {"message": "Invitation accepted"}
 
-@app.delete("/api/invitations/{invitation_id}/decline", response_model=schemas.MessageResponse)
+@app.delete("/api/families/invitations/{invitation_id}/decline", response_model=schemas.MessageResponse)
 def decline_invite(invitation_id: int, db: Session  = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     invitation = db.query(models.Invitation).filter(models.Invitation.id == invitation_id).first()
     if invitation is None:
@@ -111,6 +131,15 @@ def decline_invite(invitation_id: int, db: Session  = Depends(get_db), current_u
     db.delete(invitation)
     db.commit()
     return {"message": "Invitation declined"}
+
+@app.get("/api/families/members", response_model=list[schemas.UserResponse])
+def get_family_members(
+    db: Session = Depends(get_db), 
+    current_user: models.User = Depends(auth.get_current_user)):
+    if current_user.family_id is None:
+        return []
+    members = db.query(models.User).filter(models.User.family_id == current_user.family_id).all()
+    return members
 
 @app.get("/api/todos", response_model=schemas.TodoListResponse)
 def get_todos(
@@ -179,3 +208,41 @@ def update_todo(todo_update: schemas.TodoBase, todo_id: int, db: Session = Depen
     db.commit()
     db.refresh(db_todo)
     return db_todo
+
+
+@app.put("/api/me", response_model=schemas.UserResponse)
+def update_user(update_data: schemas.UserUpdate, db: Session = Depends(get_db) ,
+                current_user: models.User = Depends(auth.get_current_user)):
+    update_dict = update_data.model_dump(exclude_unset=True)
+    for key, value in update_dict.items():
+        setattr(current_user, key, value)
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Update failed. Username or email already taken") from e
+    return current_user
+
+@app.put("/api/me/password", response_model=schemas.MessageResponse)
+def update_password(password_data: schemas.PasswordUpdate, db: Session = Depends(get_db),
+                    current_user: models.User = Depends(auth.get_current_user)):
+    if not auth.verify_password(password_data.current_password, str(current_user.hashed_password)):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    new_hashed_pw = auth.get_password_hash(password_data.new_password)
+    setattr(current_user, "hashed_password", new_hashed_pw)
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Password update failed") from e
+    return {"message": "Password updated successfully!"}
+
+@app.delete("/api/admin/cleanup-family/{family_id}")
+def admin_delete_family(family_id: int, db: Session = Depends(get_db)):
+    db.query(models.Invitation).filter(models.Invitation.family_id == family_id).delete()
+    deleted_count = db.query(models.Family).filter(models.Family.id == family_id).delete()
+    db.commit()
+    if deleted_count == 0:
+        return {"message": f"Family {family_id} not found."}
+    return {"message": f"Successfully nuked Family {family_id}."}

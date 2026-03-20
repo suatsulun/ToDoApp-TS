@@ -1,5 +1,6 @@
 import datetime
 from pydantic import BaseModel
+from typing import Optional
 
 class FamilyCreate(BaseModel):
     name: str
@@ -18,6 +19,8 @@ class InvitationResponse(BaseModel):
     id: int
     family_id: int
     sender_id: int
+    family_name: str
+    sender_username: str
     
     class Config:
         from_attributes = True
@@ -37,6 +40,14 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+
+class PasswordUpdate(BaseModel):
+    current_password: str 
+    new_password: str
 
 class Token(BaseModel):
     access_token: str
