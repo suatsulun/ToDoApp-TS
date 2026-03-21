@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:18
+    container_name: todos-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1327
+      POSTGRES_DB: todos
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+  
+  backend:
+    build: ./Backend
+    container_name: todos-backend
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://admin:1327@db:5432/todos
+  
+  frontend:
+    build: ./Frontend
+    container_name: todos-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
