@@ -8,6 +8,12 @@ from sqlalchemy import or_
 from database import get_db
 import models
 import schemas
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY", "temporary-unsafe-key-for-dev")
 
 
 router = APIRouter(
@@ -17,7 +23,6 @@ router = APIRouter(
 
 
 
-SECRET_KEY = "insert-secret-key-here-at-the-end"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")

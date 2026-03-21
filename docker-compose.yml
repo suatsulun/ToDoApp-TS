@@ -12,10 +12,12 @@ services:
       - db_data:/var/lib/postgresql
   
   backend:
-    build: ./Backend
+    build: ./backend
     container_name: todos-backend
     ports:
       - "8000:8000"
+    env_file:
+      - ./backend/.env
     restart: always
     depends_on:
       - db
@@ -23,8 +25,10 @@ services:
       - DATABASE_URL=postgresql://admin:1327@db:5432/todos
   
   frontend:
-    build: ./Frontend
+    build: ./frontend
     container_name: todos-frontend
+    env_file:
+      - ./frontend/.env
     ports:
       - "5173:5173"
     depends_on:

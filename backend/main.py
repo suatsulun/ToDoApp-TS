@@ -5,7 +5,6 @@ from database import engine, SessionLocal
 import models
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-import os
 import auth
 from database import get_db
 from typing import cast
@@ -13,11 +12,7 @@ from typing import cast
 app = FastAPI(title="Todo App API")
 models.Base.metadata.create_all(bind=engine)
 
-frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

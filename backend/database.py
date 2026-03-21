@@ -1,11 +1,20 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://admin:1327@db:5432/todos"
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ValueError("CRITICAL ERROR: DATABASE_URL is not set in the .env file!")
+
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+    DATABASE_URL
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
