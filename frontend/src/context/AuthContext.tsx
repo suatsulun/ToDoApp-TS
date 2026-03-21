@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) =>{
                 return;
             }
             try {
-                const response = await fetch(`${API_BASE_URL}/me`, {
+                const response = await fetch(`${API_BASE_URL}/api/me`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`

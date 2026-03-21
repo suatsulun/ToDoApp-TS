@@ -24,7 +24,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 
-@app.get("/me")
+@app.get("/api/me")
 def get_me(current_user: models.User = Depends(auth.get_current_user)):
     return {
         "id": current_user.id,
@@ -33,7 +33,7 @@ def get_me(current_user: models.User = Depends(auth.get_current_user)):
         "family_id": current_user.family_id
     }
 
-@app.get("/")
+@app.get("/api")
 def read_root():
     return {"message": "Backend is running!"}
 
