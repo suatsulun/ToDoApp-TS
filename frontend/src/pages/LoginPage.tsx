@@ -42,7 +42,7 @@ const LoginPage = () => {
             }
             const data = await response.json()
             const token = data.access_token;
-            const userResponse = await fetch(`${API_BASE_URL}/me`, {
+            const userResponse = await fetch(`${API_BASE_URL}/api/me`, {
             headers: { Authorization: `Bearer ${token}` }
             });
             if (userResponse.ok) {
