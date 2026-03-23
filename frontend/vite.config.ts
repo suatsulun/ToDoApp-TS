@@ -14,4 +14,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+preview: {
+    allowedHosts: ["suatsulun.com", "www.suatsulun.com"],
+  },
+  server: {
+    allowedHosts: ["suatsulun.com", "www.suatsulun.com"],
+  }
 });
+
