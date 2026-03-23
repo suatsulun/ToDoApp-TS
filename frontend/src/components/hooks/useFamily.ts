@@ -48,7 +48,7 @@ export const useFamily = () => {
     };
 
     const refreshUser = async () => {
-    const response = await fetch(`${API_BASE_URL}/api/families/me`, {
+    const response = await fetch(`${API_BASE_URL}/api/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (response.ok) {
