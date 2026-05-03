@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import schemas
@@ -12,12 +13,17 @@ from typing import cast
 app = FastAPI(title="Todo App API")
 models.Base.metadata.create_all(bind=engine)
 
-origins = ["*"]
+frontend_url = os.getenv("FRONTEND_URL", "*")
+origins = (
+    [o.strip() for o in frontend_url.split(",") if o.strip()]
+    if frontend_url != "*"
+    else ["*"]
+)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
