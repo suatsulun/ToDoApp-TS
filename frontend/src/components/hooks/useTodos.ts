@@ -100,7 +100,7 @@ export const useTodos = () => {
       });
       if (response.ok) {
         setRefreshTrigger((prev) => prev + 1);
-        toast.success("All Todos has been deleted", {
+        toast.success("All Todos have been deleted", {
           style: {
             color: "red",
           },

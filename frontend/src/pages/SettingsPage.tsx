@@ -1,5 +1,5 @@
 import FamilyTab from "@/components/profile/FamilyTab";
-import PasswordTab from "@/components/profile/PaswordTab";
+import PasswordTab from "@/components/profile/PasswordTab";
 import ProfileTab from "@/components/profile/ProfileTab";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

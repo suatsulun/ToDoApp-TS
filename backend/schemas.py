@@ -8,9 +8,9 @@ class FamilyCreate(BaseModel):
 class FamilyResponse(BaseModel):
     id: int
     name: str
-    
+
     class Config:
-        from_atributes = True
+        from_attributes = True
 
 class InviteUser(BaseModel):
     identifier: str
