@@ -27,7 +27,7 @@ export function TodoPages({
   const totalPages = Math.ceil(totalTodos / pageSize);
 
   return (
-    <div className="flex items-center justify-between gap-4 mt-6 border-t pt-4">
+    <div className="flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-5 sm:flex-row sm:gap-4">
       <Field orientation="horizontal" className="w-fit">
         <FieldLabel htmlFor="select-rows-per-page">Rows per page</FieldLabel>
         <Select

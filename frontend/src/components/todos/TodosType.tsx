@@ -7,6 +7,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { TodosTypeProps } from "../../types/todos";
+import { cn } from "@/lib/utils";
+import { statusDotClass } from "@/lib/status";
+
+const STATUS_OPTIONS = ["Todo", "In progress", "Done", "Canceled"];
 
 const TodosType = ({
   selectedType,
@@ -14,23 +18,24 @@ const TodosType = ({
 }: TodosTypeProps): React.JSX.Element => {
   return (
     <Select value={selectedType} onValueChange={setSelectedType}>
-      <SelectTrigger className="w-[145px] border-1 border-black rounded-xs">
-        <SelectValue placeholder="Todo Type" className="rounded-xs" />
+      <SelectTrigger className="w-[140px] rounded-xl">
+        <SelectValue placeholder="Status" />
       </SelectTrigger>
-      <SelectContent className="rounded-xs">
-        <SelectGroup className="rounded-xs">
-          <SelectItem value="Todo" className="rounded-xs">
-            Todo
-          </SelectItem>
-          <SelectItem value="In progress" className="rounded-xs">
-            In Progress
-          </SelectItem>
-          <SelectItem value="Done" className="rounded-xs">
-            Done
-          </SelectItem>
-          <SelectItem value="Canceled" className="rounded-xs">
-            Canceled
-          </SelectItem>
+      <SelectContent className="rounded-xl">
+        <SelectGroup>
+          {STATUS_OPTIONS.map((status) => (
+            <SelectItem key={status} value={status} className="rounded-lg">
+              <span className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    "h-2 w-2 rounded-full",
+                    statusDotClass(status),
+                  )}
+                />
+                {status}
+              </span>
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Check, Pencil, X } from "lucide-react";
 
 interface EditableFieldProps {
   label: string;
@@ -28,9 +29,11 @@ const EditableField = ({
   }, [isEditing, currentValue]);
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between py-4 border-b last:border-0 gap-4">
-      <div className="w-1/3">
-        <p className="text-sm font-medium text-gray-500">{label}</p>
+    <div className="flex flex-col justify-between gap-3 border-b border-border/60 py-4 last:border-0 md:flex-row md:items-center md:gap-4">
+      <div className="md:w-1/3">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {label}
+        </p>
       </div>
 
       <div className="flex-1">
@@ -42,7 +45,7 @@ const EditableField = ({
             autoFocus
           />
         ) : (
-          <p className="font-medium text-gray-900">{currentValue}</p>
+          <p className="font-medium">{currentValue}</p>
         )}
       </div>
 
@@ -50,14 +53,17 @@ const EditableField = ({
         {isEditing ? (
           <>
             <Button size="sm" variant="outline" onClick={onCancel}>
+              <X className="mr-1 h-4 w-4" />
               Cancel
             </Button>
             <Button size="sm" onClick={() => onSave(tempValue)}>
+              <Check className="mr-1 h-4 w-4" />
               Save
             </Button>
           </>
         ) : (
-          <Button size="sm" variant="secondary" onClick={onEdit}>
+          <Button size="sm" variant="outline" onClick={onEdit}>
+            <Pencil className="mr-1 h-4 w-4" />
             Edit
           </Button>
         )}

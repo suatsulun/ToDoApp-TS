@@ -18,11 +18,8 @@ const DeleteAll = ({ handleDeleteAll }: DeleteAllProps): React.JSX.Element => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          className="flex-initial border-1 border-red-600 rounded-full ml-2"
-          variant="destructive"
-        >
-          <Trash />
+        <Button variant="destructive" className="gap-1.5">
+          <Trash className="h-4 w-4" />
           Delete All
         </Button>
       </AlertDialogTrigger>
@@ -40,7 +37,6 @@ const DeleteAll = ({ handleDeleteAll }: DeleteAllProps): React.JSX.Element => {
         <AlertDialogFooter>
           <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="flex-initial border-1 border-red-600 rounded-full ml-2"
             variant="destructive"
             onClick={handleDeleteAll}
           >

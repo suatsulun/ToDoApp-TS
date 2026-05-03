@@ -9,7 +9,7 @@ import SettingsPage from "./pages/SettingsPage";
 
 const App = (): React.JSX.Element => {
   return (
-    <BrowserRouter basename="/todos">
+    <BrowserRouter>
       <Toaster position="top-center" />
       <Routes>
         <Route
