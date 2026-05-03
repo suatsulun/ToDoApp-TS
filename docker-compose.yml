@@ -4,7 +4,7 @@ services:
     container_name: todos-db
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 1327
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: todos
     ports:
       - "5432:5432"
@@ -22,7 +22,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgresql://admin:1327@db:5432/todos
+      - DATABASE_URL=postgresql://admin:password@db:5432/todos
   
   frontend:
     build: ./frontend
