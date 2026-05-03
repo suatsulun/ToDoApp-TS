@@ -14,11 +14,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-preview: {
+  preview: {
     allowedHosts: ["suatsulun.com", "www.suatsulun.com"],
+    port: 5173,
+    host: true,
   },
   server: {
     allowedHosts: ["suatsulun.com", "www.suatsulun.com"],
-  }
+  },
 });
 
